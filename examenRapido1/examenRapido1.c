@@ -3,77 +3,144 @@
 
 typedef void(* opcion_t) (int); 
 
-#define N 4
-void abrir(int);
-void guardar(int);
-void salir(int);
-void copiar(int);
+struct persona {
+    char *nombreComp;
+    char nombreComp3[10];
+    int edad;
+};
 
+#define N 4
+void listarlos(int);
+void agregarPersona(int);
+void ordenarPorEdad(int);
+void copiarABC(int);
+void ordena(struct persona *, int (*)(int, int));
+int asc(int, int);
+int desc(int, int);
+
+
+int numPers=0;
+struct persona* lista;
 
 int main(int argc, const char * argv[])
 {
     
+    
     //void(*)(int) *menu =();
     opcion_t * menu=((opcion_t*) malloc(N * sizeof(opcion_t)));
     
-    *(menu)=abrir;
-    *(menu+1)=guardar;
-    *(menu+2)=salir;
-    *(menu+3)=copiar;
+    *(menu)=listarlos;
+    *(menu+1)=agregarPersona;
+    *(menu+2)=ordenarPorEdad;
+    *(menu+3)=copiarABC;
     
-    printf("---Opciones---\n1-Abrir\n2-Guardar\n3-Salir\n4-Copiar\nEscoge tu opción:  ");
+
+    
     int opcion=0;
+    
+    while (opcion != 4){
+        printf("\n---Opciones---\n1-Lista\n2-Agregar Persona\n3-Ordenar\n4-Salir\nEscoge tu opción:  ");
     
     scanf("%d", &opcion);
     
-    /*Utilizando switch*/
-    /*
-     s *witch(opcion)
-     {
-     case 1:
-         abrir(opcion);
-         break;
-     case 2:
-         guardar(opcion);
-         break;
-     case 3:
-         salir(opcion);
-         break;
-     case 4:
-         copiar(opcion);
-         break;
-     default:
-         printf("opcion no valida\n");
-         break;
-}
-//menu[opcion-1](opcion);
-*/
     /*Apuntadores a funciones*/
     
     (*(menu+opcion-1))(opcion);
+    }
+    
+    
+    struct persona* copia = lista;
+    for(;copia<(lista+numPers);++copia){
+        free((lista+numPers-1)->nombreComp);
+    }
+    
+    free(lista);
     free(menu);
     return 0;
 }//Cierre de main
 
 
-void abrir(int opcion)
+void listarlos(int opcion)
 {
-    printf("%d - abriendo el archivo...\n", opcion);
+    printf("-------------------Listar------------------------\n");
+    struct persona* p = lista;clea
+    for (;p<(lista+numPers);++p){
+        printf("Nombre: %s\nEdad: %d\n\n", p->nombreComp, p->edad);
+    }
 }
 
 
-void guardar(int opcion)
+void agregarPersona(int opcion)
 {
-    printf("%d - guardando el archivo...\n", opcion);
+    numPers++;
+    lista = (struct persona*) realloc(lista, numPers*sizeof(struct persona));
+    (lista+numPers-1)->nombreComp= malloc(sizeof(char)*30);
+    
+    printf("\n Dame el nombre de la persona: ");
+    scanf(" %[^\n]",(lista+numPers-1)->nombreComp);
+    printf("\n Dame la edad de la persona: ");
+    scanf("%d",&(lista+numPers-1)->edad);
+    
 }
 
 
-void salir(int opcion)
+void ordenarPorEdad(int opcion)
 {
-    printf("%d - terminando el programa...\n", opcion);
+    int op=0;
+    printf("1. Ordenar de menor a mayor\n2. Ordenar de mayor a menor\n");
+    scanf("%d", &op);
+    if (op==1){
+        ordena(lista, asc);
+    }
+    if (op==2){
+        ordena(lista, desc);
+    }
 }
 
-void copiar(int opcion)
+
+
+void copiarABC(int opcion)
 {
-    printf("%d - copiando el programa...\n", opcion);
+    printf("Saliendo\n");
 }
+
+
+
+
+
+void ordena(struct persona * lista, int criterio(int, int))
+{
+    int i, j, temp;
+    char * temp2;
+    temp2 = (char *) malloc(sizeof(char) * 30);
+    struct persona* temp1;
+    for(i = 0; i < numPers; ++i)
+    {
+        for(j = numPers-1; j > i; --j)
+        {
+            if (criterio((lista+j)->edad,(lista+j-1)->edad)) {
+                temp = (lista+j-1)->edad;
+                temp2 = (lista+j-1)->nombreComp;
+                (lista+j-1)->edad = (lista+j)->edad;
+                (lista+j-1)->nombreComp = (lista+j)->nombreComp;
+                (lista+j)->edad = temp;
+                (lista+j)->nombreComp = temp2;
+            }
+        }
+    }
+    free(temp2);
+}
+
+
+int asc(int a, int b)
+{
+    return a < b;
+}
+
+int desc(int a, int b)
+{
+    return b < a;
+}
+
+
+
