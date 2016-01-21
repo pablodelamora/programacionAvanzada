@@ -31,7 +31,6 @@ int main(int argc, const char * argv[])
     for (;ayuda<(letras+26);ayuda++){
      
         *ayuda=(ayuda-letras)+'a';
-        printf("%c",*ayuda);
     }
     
     printf("Entre una cadena: ");
@@ -51,13 +50,14 @@ int main(int argc, const char * argv[])
     }
     
     
-    ordena(letras,count,asc);
+    ordena(letras,count,desc);
     
     
     int* c= count;
+    char *l =letras;
     for (;c<(count+26);c++){
         if (*c != 0){
-            printf("%c occurs %d times ", (*letras),  (*c));
+            printf("%c occurs %d times ", (*l),  (*c));
         //printf("%c occurs %d times ", ((c-count)+'a'),  (*c));
         int i=0;
         for (i=0; i<*c;i++){
@@ -66,7 +66,7 @@ int main(int argc, const char * argv[])
         printf("\n");
 //        cadena++;
         }
-        letras++;
+        l++;
     }
     
     
@@ -87,13 +87,12 @@ void ordena(char * letras,int * numeros, int criterio(int, int))
     int i, j, temp;
     char temp1;
     
-    for(i = 0; i < N; ++i)
+    for(i = 0; i < 26; ++i)
     {
-        for(j = N-1; j > i; --j)
+        for(j = 26-1; j > i; --j)
         {
             if (criterio(numeros[j],numeros[j-1])) {
                 
-                printf("%d",numeros[j-1]);
                 temp = numeros[j-1];
                 temp1=letras[j-1];
                 
@@ -102,7 +101,6 @@ void ordena(char * letras,int * numeros, int criterio(int, int))
                 
                 numeros[j] = temp;
                 letras[j]=temp1;
-                printf("-- %d\n",numeros[j-1]);
             }
         }
     }
