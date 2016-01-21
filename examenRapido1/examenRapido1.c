@@ -27,30 +27,37 @@ int main(int argc, const char * argv[])
     //scanf("%s", cadena);
     scanf(" %[^\n]",cadena);
     
-    printf("%d", *count);
-    
-    int * aa = count;
-    
-    printf("%d", (*count(*cadena-'a')));
-
+//    printf("%d", *count);
     
     char*copia = cadena;
     while (*copia != '\0'){
     
     
     if(*copia>='a' && *copia<='z'){
-//          *(count+(*copia-'a'))++;
+          count[*copia-'a']++;
     }
     copia++;
     }
     
     int* c= count;
     for (;c<(count+26);c++){
-        printf("%c occurs %d times\n", cadena+'a', (*count+c));
+        if (*c != 0){
+        printf("%c occurs %d times ", ((c-count)+'a'),  (*c));
+        int i=0;
+        for (i=0; i<*c;i++){
+            printf("*");
+        }
+        printf("\n");
+        cadena++;
+        }
     }
     
-    free (count);
-    free(cadena);
+    
+    
+    
+    
+  //  free (count);
+  //  free(cadena);
     return 0;
 }//Cierre de main
 
