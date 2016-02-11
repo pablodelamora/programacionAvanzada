@@ -27,13 +27,10 @@ int main(int argc,  char * argv[]) {
             abort ();
     }
 
-    //  printf("%s %d", pvalue, nvalue);
+  //    printf("%s %d\n", pvalue, nvalue);
     int i;
     for (i=0;i<nvalue; ++i){
-      pid = fork();
-      if (pid==0){
-        exec1(pvalue, (char*)NULL);
-      }
+        system(pvalue);
     }
     wait(NULL);
     return 0;

@@ -13,12 +13,13 @@ int main ( int argc, char *argv[] ){
     printf("Dame la cantidad de hijos a crear: ");
     scanf("%d", &num);
 
-    srand((int) time(NULL));
+    //srand((int) time(NULL));
 
 int i;
  for (i = 0; i < num; ++i) {
     int status;
     pid2 = fork();
+    srand(time(NULL) ^ (getpid()<<1));
 
     if (pid2 == -1){
       printf("Error");
