@@ -4,63 +4,77 @@
 
 int main(int argc, char * argv[])
 {
-    // Posicion 0 es pos de lectura y 1 es de escritura
-    int tuberia[2];
-    int tuberia2[2];
-    pid_t pid;
+        int num = atoi(argv[1]);
+        int i;
+        int aux1, aux2;
 
-    // Crea el pipe
-    pipe(tuberia);
-    pipe(tuberia2);
+        int ** arrPipe = (int**)malloc(num*sizeof(int*));
+        char token = 'A';
 
-    // Hacer fork, los dos prcesos tienen conocimiento de la estructura
-    pid = fork();
-
-    if(pid == -1)
-    {
-        printf("Error al crear al proceso hijo\n");
-        exit(-1);
-    }
-    else if(pid == 0)
-    {
-        int factorial, numero, bits, i;
-
-        while(1)
+        for(i = 0; i < num; ++i)
         {
-            // Cerrar escritura antes de leer, no cerrar lectura despues de leer
-            close(tuberia[1]);
-            bits = read(tuberia[0], &numero, sizeof(int));
-            if(bits == sizeof(int))
+            *(arrPipe+i) = (int*)malloc(2*sizeof(int));
+            pipe(*(arrPipe+i));
+        }
+
+
+
+
+        pid_t pid;
+        for(i = 0; i < num-1; ++i)
+        {
+            pid = fork();
+            if(pid == -1)
             {
-                if(numero == 0) exit(0);
-                factorial = 1;
-                for(i = 1; i <= numero; ++i)
-                {
-                    factorial *= i;
+                printf("Error al crear hijo\n");
+                break;
+            }
+            else if(pid == 0) {
+                if(i == num-2) {
+                    aux2 = i+1;
+                    aux1 = i;
+                    close((*(arrPipe+aux1))[0]);
+                    write((*(arrPipe+aux1))[1], &token, sizeof(char));
+                    break;
                 }
-//                printf("El factorial de %d es %d\n", numero, factorial);
-                close(tuberia2[0]);
-                write(tuberia2[1], &factorial, sizeof(int));
+            }
+            else {
+                aux1 = i;
+                if(i == 0){
+                    aux2 = num-1;
+                }
+                else{
+                    aux2 = i+1;
+                }
+                break;
             }
         }
-    }
-    else
-    {
-        int fact;
-        int num = 1;
-        while(num  != 0)
+
+        char tokenLeido;
+
+
+        int loop=1;
+        while(loop)
         {
-            scanf("%d", &num);
-            // Cerrar lectura antes de escribir, no cerrar ecritura despues...
-            close(tuberia[0]);
-            write(tuberia[1], &num, sizeof(int));
+            close((*(arrPipe+aux2))[1]);
+            read((*(arrPipe+aux2))[0], &tokenLeido, sizeof(char));
+            printf("Soy el proceso con PID %d y recibi el testigo %c el cual tendre por 5 segundos\n", getpid(), tokenLeido);
+            sleep(5);
 
-
-            close(tuberia2[1]);
-            read(tuberia2[0], &fact, sizeof(int));
-            printf("%d\n",fact);
-
+            close((*(arrPipe+aux1))[0]);
+            write((*(arrPipe+aux1))[1], &tokenLeido, sizeof(char));
+            printf("Soy el proceso con PID %d y acabo de enviar el testigo %c\n\n", getpid(), token);
         }
-    }
-    return 0;
+
+
+
+
+        for(i = 0; i < num; ++i)
+        {
+            free(*(arrPipe+i));
+        }
+        free(arrPipe);
+
+        return 0;
+
 }
