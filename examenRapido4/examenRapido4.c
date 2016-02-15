@@ -11,8 +11,7 @@ int main(int argc, char * argv[])
         int ** arrPipe = (int**)malloc(num*sizeof(int*));
         char token = 'A';
 
-        for(i = 0; i < num; ++i)
-        {
+        for(i = 0; i < num; ++i) {
             *(arrPipe+i) = (int*)malloc(2*sizeof(int));
             pipe(*(arrPipe+i));
         }
@@ -21,8 +20,7 @@ int main(int argc, char * argv[])
 
 
         pid_t pid;
-        for(i = 0; i < num-1; ++i)
-        {
+        for(i = 0; i < num-1; ++i) {
             pid = fork();
             if(pid == -1)
             {
@@ -31,8 +29,8 @@ int main(int argc, char * argv[])
             }
             else if(pid == 0) {
                 if(i == num-2) {
-                    aux2 = i+1;
-                    aux1 = i;
+                    aux1 = i+1;
+                    aux2 = i;
                     close((*(arrPipe+aux1))[0]);
                     write((*(arrPipe+aux1))[1], &token, sizeof(char));
                     break;
@@ -44,7 +42,7 @@ int main(int argc, char * argv[])
                     aux2 = num-1;
                 }
                 else{
-                    aux2 = i+1;
+                    aux2 = i-1;
                 }
                 break;
             }
@@ -54,8 +52,7 @@ int main(int argc, char * argv[])
 
 
         int loop=1;
-        while(loop)
-        {
+        while(loop) {
             close((*(arrPipe+aux2))[1]);
             read((*(arrPipe+aux2))[0], &tokenLeido, sizeof(char));
             printf("Soy el proceso con PID %d y recibi el testigo %c el cual tendre por 5 segundos\n", getpid(), tokenLeido);
@@ -69,8 +66,7 @@ int main(int argc, char * argv[])
 
 
 
-        for(i = 0; i < num; ++i)
-        {
+        for(i = 0; i < num; ++i) {
             free(*(arrPipe+i));
         }
         free(arrPipe);
