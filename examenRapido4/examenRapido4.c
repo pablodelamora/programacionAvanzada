@@ -20,7 +20,7 @@ int main(int argc, char * argv[])
 
 
         pid_t pid;
-        for(i = 0; i < num-1; ++i) {
+        for(i = 0; i < num; ++i) {
             pid = fork();
 //            printf("%d\n", i);
             if(pid == -1)
@@ -31,8 +31,8 @@ int main(int argc, char * argv[])
             else if(pid == 0) {
 //                printf("hijo \n");
 //                printf("%d", i);
-                if(i == num-2) {
-                    aux2 = i+1;
+                if(i == num-1) {
+                    aux2 = i+1%num;
                     aux1 = i;
 
 //                    printf("3= %d", i);
@@ -58,7 +58,7 @@ int main(int argc, char * argv[])
         }
 
         char tokenLeido;
-//        printf("prueba\n");
+      //  printf("prueba\n");
 
 
         while(1) {
@@ -82,3 +82,25 @@ int main(int argc, char * argv[])
         return 0;
 
 }
+
+
+
+/*
+void leerYescribir(int * fd)
+{
+    char c;
+
+    while( 1 )
+    {
+        close(fd[1]);
+        read(fd[0], &c, sizeof(char));
+        printf("Recibi: %c", c);
+//        printf("---  Recibí f(%d) = %d  \n", c, factorial(c));
+        sleep(5);
+        close (fd[0]);
+        printf("+++ Envío %c \n", c);
+        write(fd[1], &c, sizeof(char));
+    }
+
+}
+*/
