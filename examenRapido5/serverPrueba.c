@@ -52,7 +52,7 @@ int main(int argc, const char * argv[]) {
                ntohs(direccion.sin_port));
 
         // Leer de socket y escribir en pantalla
-        do {
+        while (1) {
             int count;
             int *reads;
 
@@ -78,11 +78,13 @@ int main(int argc, const char * argv[]) {
                 }
                 promedio = promedio + *current;
             }
+            promedio = promedio/ count;
 
-        //    print_stats(stats);
         printf("Mayor: %d\nMenor: %d\n Promedio: %d", &mayor, &menor, &promedio);
-        printf("Hola");
-        } while (1);
+        //printf("Hola");
+        free(reads);
+
+        }
     //    }
     }
     else {

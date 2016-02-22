@@ -48,13 +48,15 @@ int main(int argc, const char * argv[]) {
                for (current = reads; current != end; ++current){
                  usleep(5000);
                  *current = rand() % 10;
-                // printf(current);
+                 //printf(*current);
                }
 
               // printf("prueba");
 
                write (cliente, &count, sizeof(int));
                write (cliente, &reads, sizeof(int) * count);
+
+               free(reads);
         }
     }
 
