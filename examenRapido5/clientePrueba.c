@@ -45,10 +45,14 @@ int main(int argc, const char * argv[]) {
                int *current;
                int *end = reads + count;
 
+            //   printf("1");
+
                for (current = reads; current != end; ++current){
                  usleep(5000);
                  *current = rand() % 10;
                  //printf(*current);
+
+            //     printf("2");
                }
 
               // printf("prueba");

@@ -80,7 +80,7 @@ int main(int argc, const char * argv[]) {
             }
             promedio = promedio/ count;
 
-        printf("Mayor: %d\nMenor: %d\n Promedio: %d", &mayor, &menor, &promedio);
+        printf("Mayor: %d\nMenor: %d\n Promedio: %d", mayor, menor, promedio);
         //printf("Hola");
         free(reads);
 
