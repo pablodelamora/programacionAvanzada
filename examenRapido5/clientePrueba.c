@@ -4,22 +4,16 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <time.h>
 
 #define TCP_PORT 8000
 
-
-
 int main(int argc, const char * argv[]) {
-    clock_t t1, t2;
-    float cadaCinc;
-    float diff;
-    int numeros[20];
+
     struct sockaddr_in direccion;
     char buffer[1000];
-    int paso;
+
     int cliente;
-    srand(time(NULL));
+
     int leidos, escritos;
 
     if (argc != 2) {
@@ -44,24 +38,23 @@ int main(int argc, const char * argv[]) {
                inet_ntoa(direccion.sin_addr),
                ntohs(direccion.sin_port));
 
-        // Leer de teclado y escribir en socket
-        while(1){
-            cadaCinc = 50;
-            t1= clock();
-            t2 = clock();
-            diff = 0;
-            while (diff < 1000) {
-                if(diff >= cadaCinc){
-                    cadaCinc+=50;
-                    snprintf(buffer, "%d", rand()%50);
-                    write(cliente, &buffer, sizeof(buffer));
-                    printf("%saaa", buffer);
-                    //leidos = read(cliente, &buffer, sizeof(buffer));
-                    //write(fileno(stdout), &buffer, leidos);
-                    t2=clock();
-                    diff = (((float)t2 - (float)t1) / CLOCKS_PER_SEC) * 1000;
-                }
-            }
+               while(1){
+
+               int count = rand ()%10;
+               int *reads = malloc (sizeof(int)*count);
+               int *current;
+               int *end = reads + count;
+
+               for (current = reads; current != end; ++current){
+                 usleep(5000);
+                 *current = rand() % 10;
+                // printf(current);
+               }
+
+              // printf("prueba");
+
+               write (cliente, &count, sizeof(int));
+               write (cliente, &reads, sizeof(int) * count);
         }
     }
 

@@ -8,37 +8,6 @@
 
 #define TCP_PORT 8000
 
-int factorial (int num);
-
-/* reverse:  reverse string s in place */
-void reverse(char s[])
-{
-    int i, j;
-    char c;
-    int numeros[20];
-
-    for (i = 0, j = strlen(s)-1; i<j; i++, j--) {
-        c = s[i];
-        s[i] = s[j];
-        s[j] = c;
-    }
-}
-
-void itoa(int n, char s[])
-{
-    int i, sign;
-
-    if ((sign = n) < 0)  /* record sign */
-        n = -n;          /* make n positive */
-    i = 0;
-    do {       /* generate digits in reverse order */
-        s[i++] = n % 10 + '0';   /* get next digit */
-    } while ((n /= 10) > 0);     /* delete it */
-    if (sign < 0)
-        s[i++] = '-';
-    s[i] = '\0';
-    reverse(s);
-}
 
 
 
@@ -74,7 +43,8 @@ int main(int argc, const char * argv[]) {
 
     cliente = accept(servidor, (struct sockaddr *) &direccion, &tamano);
 
-    int fact;
+    //int fact;
+    printf("AAAAAAA");
 
     if (cliente >= 0) {
         printf("Aceptando conexiones en %s:%d \n",
@@ -82,19 +52,41 @@ int main(int argc, const char * argv[]) {
                ntohs(direccion.sin_port));
 
         // Leer de socket y escribir en pantalla
-        while (leidos = read(cliente, &buffer, sizeof(buffer))) {
-            write(fileno(stdout), &buffer, leidos);
+        do {
+            int count;
+            int *reads;
 
-            printf("%d\n\n", atoi(buffer));
-            fact = factorial(atoi(buffer));
+            read(cliente, &count, sizeof(int));
 
-            printf("Factorial = %d\n", fact);
+            reads = malloc(sizeof(int) * count);
 
-            itoa(fact, buffer);
+            read(cliente, &reads, sizeof(int) * count);
 
-           //leidos = write(fileno(stdin), &buffer, sizeof(buffer));
-            write(cliente, &buffer, sizeof(int));
-        }
+            int *current;
+            int *end = reads + count;
+
+            int mayor=0;
+            int menor=0;
+            int promedio=0;
+
+            for (current = reads; current != end; ++current) {
+                if (*current > mayor){
+                  mayor = *current;
+                }
+                if (*current < menor){
+                  menor = *current;
+                }
+                promedio = promedio + *current;
+            }
+
+        //    print_stats(stats);
+        printf("Mayor: %d\nMenor: %d\n Promedio: %d", &mayor, &menor, &promedio);
+        printf("Hola");
+        } while (1);
+    //    }
+    }
+    else {
+      printf("Error");
     }
 
     // Cerrar el socket
@@ -103,14 +95,4 @@ int main(int argc, const char * argv[]) {
     close(cliente);
 
     return 0;
-}
-
-int factorial (int num)
-{
-    int f = 1;
-    int i;
-    for(i = 2; i <= num; ++i)
-        f *= i;
-
-    return f;
 }
