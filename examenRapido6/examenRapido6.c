@@ -32,7 +32,7 @@ void gestorAlarma(int a)
 
 void gestorConts(int a)
 {
-    printf("Se ha pulsado %d veces CTRL+C, y se ha pulsado %d veces CTRL+Z\n", x, y);
+    printf("Se ha pulsado %d veces CTRL+C y se ha pulsado %d veces CTRL+Z. Acabando…\n", x, y);
     aux = 1;
 }
 
