@@ -1,100 +1,72 @@
-#include <signal.h>
 #include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
 
-struct sigaction act;
-
-int c=0;
-int x=3;
-int z=0;
-int i=10;
-int s=0;
-int j=1;
-
-void valor(void){
-s=1;
-}
-
-void manejadorAlarma(int sig){
-	printf("Aparezco cada %d, segundos.\n", x);
-	alarm(x);
-}
+int x = 0;
+int y = 0;
+int segundos = 3;
+int aux = 0;
 
 void gestor_ctrlc(int senial){
 
   if (senial==SIGINT){
-   c++;
    x++;
+   segundos++;
   }
 
   else if(senial==SIGTSTP){
-    z++;
-    if(x>1)
-        x--;
+    y++;
+    if(segundos>1)
+        segundos--;
   }
 
 }
 
 
-int main(int argc, const char * argv[])
+void gestorAlarma(int a)
 {
-     if ( signal (SIGTSTP, SIG_IGN) == SIG_ERR )//cambio el comportamiento para ignorar la señal
-    {
-        printf("error crenado el manejador.\n");
-        exit(-1);
-    }
-if ( signal (SIGINT, SIG_IGN) == SIG_ERR )//cambio el comportamiento para ignorar la señal
-    {
-        printf("error crenado el manejador.\n");
-        exit(-1);
-    }
+    printf("Aparezco cada %d segundos\n", segundos);
+}
 
-
-
-    pid_t pid = fork();
-while(1)
+void gestorConts(int a)
 {
-    if(!pid) {
-	     for(;i>=0;--i) {
-          if(i==0) {
-            //printf("soy el hijo y Desperté!");
-            kill(getppid(), SIGUSR1);
-          }
-        sleep(1);
-        printf("%d\n",i);
-      }
-    }//Cierre hijo
+    printf("Se ha pulsado %d veces CTRL+C, y se ha pulsado %d veces CTRL+Z\n", x, y);
+    aux = 1;
+}
 
-    else {
-if ( signal (SIGINT, gestor_ctrlc) == SIG_ERR )//cambio el comportamiento para ignorar la señal
-    {
-       printf("Error en el gestor de señales.\n");
-        exit(-1);
+int main(int argc, char** argv)
+{
+    pid_t pid;
+
+    pid = fork();
+
+    if(pid == 0)  {
+        signal(SIGINT, SIG_IGN);
+        signal(SIGTSTP, SIG_IGN);
+
+        sleep(10);
+        kill(getppid(), SIGUSR1);
+
     }
+    else if(pid > 0)  {
+        signal(SIGUSR1, gestorConts);
+        signal(SIGTSTP, gestor_ctrlc);
+        signal(SIGINT, gestor_ctrlc);
+        signal(SIGALRM, gestorAlarma);
 
-   if ( signal (SIGTSTP, gestor_ctrlc) == SIG_ERR )//cambio el comportamiento para ignorar la señal
-    {
-       printf("Error en el gestor de señales.\n");
-        exit(-1);
-    }
 
-//padre
-signal(SIGUSR1, valor);
-  if ( s==1 )//cambio el comportamiento para ignorar la señal
+
+        while(aux == 0)
         {
-        printf("Se presionó Ctrl C  %d  veces. y Ctrl Z  %d  veces.\n", c , z);
-        kill(getpid(), SIGKILL);
-         }
+            alarm(segundos);
+            pause();
+        }
 
-    for(;j<=x;++j)
-    {
-        sleep(1);
+
+        kill(0, SIGKILL);
     }
-    printf("Aparezco cada  %d  segundos \n", x);
-    j=1;
 
 
-    }//Cierre padre
-}//Cierre de while
-
-    return 0;
 }
