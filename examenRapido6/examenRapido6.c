@@ -1,6 +1,8 @@
 #include <signal.h>
 #include <stdio.h>
 
+struct sigaction act;
+
 int c=0;
 int x=3;
 int z=0;
@@ -12,16 +14,24 @@ void valor(void){
 s=1;
 }
 
-void gestor_ctrlc(int senial){
-   c++;
-   x++;
+void manejadorAlarma(int sig){
+	printf("Aparezco cada %d, segundos.\n", x);
+	alarm(x);
 }
 
-void gestor_ctrlz(int senial)
-{
-  z++;
-if(x>1)
-  x--;
+void gestor_ctrlc(int senial){
+
+  if (senial==SIGINT){
+   c++;
+   x++;
+  }
+
+  else if(senial==SIGTSTP){
+    z++;
+    if(x>1)
+        x--;
+  }
+
 }
 
 
@@ -46,7 +56,7 @@ while(1)
     if(!pid) {
 	     for(;i>=0;--i) {
           if(i==0) {
-            printf("soy el hijo y Desperté!");
+            //printf("soy el hijo y Desperté!");
             kill(getppid(), SIGUSR1);
           }
         sleep(1);
@@ -61,12 +71,13 @@ if ( signal (SIGINT, gestor_ctrlc) == SIG_ERR )//cambio el comportamiento para i
         exit(-1);
     }
 
-   if ( signal (SIGTSTP, gestor_ctrlz) == SIG_ERR )//cambio el comportamiento para ignorar la señal
+   if ( signal (SIGTSTP, gestor_ctrlc) == SIG_ERR )//cambio el comportamiento para ignorar la señal
     {
        printf("Error en el gestor de señales.\n");
         exit(-1);
     }
-        //padre
+
+//padre
 signal(SIGUSR1, valor);
   if ( s==1 )//cambio el comportamiento para ignorar la señal
         {
@@ -74,14 +85,12 @@ signal(SIGUSR1, valor);
         kill(getpid(), SIGKILL);
          }
 
-for(;j<=x;++j)
+    for(;j<=x;++j)
     {
         sleep(1);
     }
-printf("Aparezco cada  %d  segundos \n", x);
-j=1;
-
-
+    printf("Aparezco cada  %d  segundos \n", x);
+    j=1;
 
 
     }//Cierre padre
