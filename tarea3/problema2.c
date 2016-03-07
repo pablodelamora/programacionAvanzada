@@ -9,8 +9,8 @@
 #include <signal.h>
 #include <fcntl.h>
 
-#define N 5 // Archivos a crear
-#define T 3 // Tiempo
+#define N 5
+#define T 3
 
 int grabar;
 void creaDestruyeDirectorio();
@@ -34,7 +34,6 @@ int main(int argc, const char * argv[])
 		while (grabar)
 			write(fd, "x", sizeof(char));
 
-		// Imprimir tamaño
 		fstat(fd, &st);
 		printf("a%d   %d\n", i, (int)st.st_size);
 
@@ -58,20 +57,14 @@ void creaDestruyeDirectorio() {
     struct dirent * dir;
     char * res;
 
-    // readdir va iterando por todos los contenidos del directorio
     while((dir = readdir(d)) != NULL)
     {
-        // Si el archivo es de tipo DT_REG (regular file)
         if(dir->d_type == DT_REG)
         {
-            // Alocar memoria para el string que se compone de "Datos/[nombre del archivo]"
             res = (char*)malloc((strlen(da)+strlen(dir->d_name)+1)*sizeof(char));
             strcpy(res, da);
             strcat(res, dir->d_name);
-
-            // Unlink borra el archivo encontrado
             unlink(res);
-
             free(res);
         }
     };
