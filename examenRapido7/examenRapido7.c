@@ -14,14 +14,19 @@
 
 int grabar;
 void creaDestruyeDirectorio();
-void temporizador(int);
+void gestorAlarm(int);
 
 int main(int argc, const char * argv[])
 {
-	signal(SIGALRM, temporizador);
-    creaDestruyeDirectorio();
+	sigset_t conjunto, pendientes;
+	sigfillset(&conjunto);
+	sigdelset(&conjunto, SIGALRM);
+	sigprocmask(SIG_BLOCK, &conjunto, NULL);
+	signal(SIGALRM, gestorAlarm);
+  creaDestruyeDirectorio();
 
-	int i, fd, len = ((N-1) / 10) + 9;
+	int i, fd;
+	int len = ((N-1) / 10) + 9;
 	char* buffer = (char*) malloc(len * sizeof(char));
 	struct stat st;
 
@@ -31,11 +36,23 @@ int main(int argc, const char * argv[])
 		fd = open(buffer, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 
 		alarm(T);
-		while (grabar)
+		while (grabar){
 			write(fd, "x", sizeof(char));
+		}
+
+		int sig_count, size;
+		char buffer[10];
+		sigpending(&pendientes);
+		for (sig_count = 1; sig_count < NSIG; ++sig_count) {
+			if (sigismember(&pendientes, sig_count)) {
+				size = sprintf(buffer, "%d\n", sig_count);
+				write(fd, buffer, size);
+			}
+		}
 
 		fstat(fd, &st);
 		printf("a%d   %d\n", i, (int)st.st_size);
+
 
 		close(fd);
 	}
@@ -44,15 +61,15 @@ int main(int argc, const char * argv[])
 	return 0;
 }
 
-void temporizador(int s) {
+void gestorAlarm(int s) {
 	grabar = 0;
 }
+
 
 void creaDestruyeDirectorio() {
   char da[7] = "Datos/\0";
 	DIR* dir = opendir("Datos");
 	if (dir) {
-///////////////////////////////////////////////
     DIR * d = opendir("Datos");
     struct dirent * dir;
     char * res;
