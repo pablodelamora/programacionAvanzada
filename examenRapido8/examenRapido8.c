@@ -43,6 +43,7 @@ int main(int argc, const char * argv[]) {
   pthread_mutex_init(&mutex, NULL);
 
   Cliente* param;
+  //printf("hola");
   int i=0;
   for (i=0; i< numClientes; ++i){
     param = malloc (sizeof(Cliente));
@@ -58,20 +59,19 @@ int main(int argc, const char * argv[]) {
     }
 
     if ((param->claseCliente)==1){
+        //printf("%d", i);
         pthread_create((hilos+i),NULL, procesoGeneral,  (void *) param);
         clientesGenerales--;
     }
     else if((param->claseCliente)==2){
+      //printf("%d", i);
       pthread_create((hilos+i),NULL, procesoEmpresarial,  (void *) param);
       clientesEmpresariales--;
     }
   }
 
   for (i = 0; i < numClientes; ++i) {
-
     pthread_join(*(hilos+i), NULL);
-
-    printf("--- Terminando el hilo %d ...\n", i);
   }
   sem_destroy(&cajGeneral);
   sem_destroy(&cajEmpresarial);
@@ -85,14 +85,13 @@ int main(int argc, const char * argv[]) {
 void * procesoGeneral(void* param){
   int tiempoLlegada, tiempoEspera;
   tiempoLlegada = (rand()%171)+50;
-  printf("%d", tiempoLlegada);
   sleep(tiempoLlegada); //crea el numero aleatorio y espera a que lleguen los clientes
   int numCajero;
 
   if (contGeneral<=turnosMax){
     sem_wait(&cajGeneral);
     sem_getvalue(&cajGeneral, &numCajero);
-    printf("El cajero General #%d atiende al id %d en una operacion de tipo %d", numCajero,((Cliente*)param)->id,((Cliente*)param)->claseCliente);
+    printf("El cajero General #%d atiende al id %d en una operacion de tipo %d\n", numCajero,((Cliente*)param)->id,((Cliente*)param)->claseCliente);
     tiempoEspera = (rand()%4)+2;
     sleep(tiempoEspera);
     pthread_mutex_lock(&mutex);
@@ -114,14 +113,13 @@ void * procesoGeneral(void* param){
 void * procesoEmpresarial(void* param){
   int tiempoLlegada, tiempoEspera;
   tiempoLlegada = (rand()%251)+90;
-  printf("%d", tiempoLlegada);
   sleep (tiempoLlegada);
   int numCajero;
 
   if(contEmpresarial<=turnosMax){
     sem_wait(&cajEmpresarial);
     sem_getvalue(&cajEmpresarial, &numCajero);
-    printf("El cajero Empresarial #%d atiende al id %d en una operacion de tipo %d", numCajero,((Cliente*)param)->id,((Cliente*)param)->claseCliente);
+    printf("El cajero Empresarial #%d atiende al id %d en una operacion de tipo %d\n", numCajero,((Cliente*)param)->id,((Cliente*)param)->claseCliente);
     tiempoEspera = 1;
     sleep(tiempoEspera);
     pthread_mutex_lock(&mutex);
