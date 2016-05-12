@@ -56,15 +56,15 @@ void resuelve(int arr[N][N],int cuadrante){
   int actualx = inicio;
   int actualy = actualx;
 
-  while(avanza!=tamCuadrantes){
+  while(avanza<tamCuadrantes){
     arr[inicio][inicio] = 3;
-    if(arr[actualx+1][actualy+1]==0){
+  //  if(arr[actualx+1][actualy+1]==0){
       actualx = actualx +1;
       actualy = actualy +1;
       arr[actualx][actualy] = 3;
       avanza = avanza+1;
-    }
-    else if(arr[actualx+1][actualy]==0){
+  //  }
+    /*else if(arr[actualx+1][actualy]==0){
       arr[actualx+1][actualy] == 3;
       actualx= actualx+1;
       arr[actualx+1][actualy] == 3;
@@ -73,8 +73,8 @@ void resuelve(int arr[N][N],int cuadrante){
       actualy= actualy+1;
       arr[actualx][actualy+1] == 3;
       actualy= actualy+1;
-      avanza = avanza+2;
-    }
+      avanza = avanza+2; */
+    //}
   }
 }
 
@@ -88,7 +88,7 @@ int main() {
   int tamCuadrantes = N/P;
   int cuadrantesNecesarios = res/tamCuadrantes;
 
-  resuelve(arr, 1);
+  resuelve(arr, 0);
 
   printf("\n\n");
 
